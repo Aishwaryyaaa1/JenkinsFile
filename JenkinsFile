@@ -1,55 +1,74 @@
-pipeline{
+pipeline {
     agent any
 
-    environment{
-        DIRECTORY_PATH='/random_path'
-        TESTING_ENVIRONMENT= 'TEST_ENV_STAT'
-        PRODUCTION_ENVIRONMENT = 'PROD_ENV_STAT'
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building the code using Maven"
+                
+            }
+        }
+        
+        stage('Unit and Integration Tests') {
+            steps {
+                echo " Running unit using JUnit and integration tests using Selenium"
+                
+            }
+        }
+
+        stage('Code Analysis') {
+            steps {
+                echo "Analyzing the code using a code analysis tool SonarQube"
+                          }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo "Performing a security scan using OWASP ZAP"
+                
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo "Deploying the application to a staging server  AWS EC2"
+               
+            }
+        }
+
+        stage('Integration Tests on Staging') {
+            steps {
+                echo "Running integration tests using Selenium"
+             
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo "Deploying  application to a production server AWS EC2"
+
+            }
+        }
     }
 
-    stages{
-        stage('Build'){
-            steps{
-                echo "fetch the source code from the directory path specified by the environment variable"
-                echo "compile the code and generate any necessary artifacts"
-
-            }
+    post {
+        success {
+            echo "Pipeline success!!!!"
+            emailext(
+                to: "aishwaryyaaa1@gmail.com",
+                subject: "Pipeline - Success",
+                body: "The  pipeline has implemented successfully!",
+                attachLog: true
+            )
         }
-
-         stage('Test'){
-            steps{
-                echo "unit tests"
-                echo "integration tests"
-            }
+        failure {
+            echo "Pipeline failure!!!!"
+            emailext(
+                to: "aishwaryyaaa1@gmail.com",
+                subject: "Pipeline - Failure",
+                body: "The pipeline has failed !Kindly, check  log",
+                attachLog: true
+            )
         }
-
-         stage('Code Quality Check'){
-            steps{
-                echo "check the quality of the code"
-            }
-        }
-
-        stage('Deploy'){
-            steps{
-                echo "deploy the application to a testing environment specified by the environment variable"
-            }
-        }
-
-        stage('Approval'){
-            steps{
-                sleep 10
-            }
-        }
-
-        stage('Deploy To Production'){
-            steps{
-                echo "Deployed to production with env ${PRODUCTION_ENVIRONMENT}"
-            }
-        }
-
-
-       
-
-
     }
 }
